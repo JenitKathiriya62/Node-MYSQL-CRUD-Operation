@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Student Data</title>
+  </head>
+  <body>
+    <h1>Search Here</h1>
+    <form onsubmit="return searching()">
+        <input type="search" name="name" placeholder="Search Name" id="name" onkeyup="searching()">
+        <input type="search" name="email" placeholder="Search Email" id="email" onkeyup="searching()">
+        <input type="search" name="mno" placeholder="Search Mobile" id="mno" onkeyup="searching()">
+        <input type="submit" value="Search">
+    </form>
+
+
+
+    <h1>Students List</h1>
+
+    <table border="1" width="100%">
+      <tr>
+        <th>S.No</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile No.</th>
+      </tr>
+
+      <% if(students.length > 0){ %>
+        
+        <% for(var i = 0; i<students.length; i++){   %>  
+            <tr class="tr">
+                <td><%- students[i].id %></td>
+                <td><%- students[i].name %></td>
+                <td><%- students[i].email %></td>
+                <td><%- students[i].mno %></td>
+                </tr>
+        
+            <%  } %>
+      <%}else{ %>
+                <tr><td>Student Data Not Found</td></tr>
+    <% } %>
+
+      
+    </table>
+  </body>
+</html>
+<script>
+
+function searching(){
+
+      document.querySelectorAll(".tr").forEach(function(ele){
+          ele.remove()
+      });
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
+      var mno = document.getElementById('mno').value;
+      var table = document.getElementsByTagName('table')[0];
+      var req= new XMLHttpRequest();
+      req.open("GET","/searching?name=" + name + "&email=" + email + "&mno=" + mno);
+      req.send();
+
+      req.onreadystatechange = function(){
+          if(req.readyState == 4 && req.status == 200){
+            var obj= JSON.parse(req.responseText);
+            if(obj.length > 0){
+
+                for(let i = 0; i<obj.length;i++){
+
+                  table.innerHTML += "<tr class ='tr'><td>"+(i+1)+"</td> <td>"+obj[i]['name']+"</td>  <td>"+obj[i]['email']+"</td> <td>"+obj[i]['mno']+"</td></tr>"
+
+                }
+
+            }else{
+              table.innerHTML += "<tr class ='tr'><td colspan='5'> Data Not Found </td></tr>"
+            }
+          }
+      };
+
+    return false;
+}
+</script>
